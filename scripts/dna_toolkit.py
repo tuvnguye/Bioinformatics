@@ -1,54 +1,39 @@
-# DNA sequence toolkit
+# DNA Toolkit
 
-seq = input("Enter a DNA sequence from 5' to 3': ").upper()
-dna_seq = seq.replace(" ", "").join(seq.splitlines())
-
-print("Length of the sequence: ", len(seq), "nucleotides")
-
-def validate_dna_seq(seq):
+def validate_dna_seq(dna_seq):
     validate_bases = "A", "T", "G", "C"
-    for bases in seq:
+    for bases in dna_seq:
         if bases not in validate_bases:
             return False
     return True
-if not validate_dna_seq(seq):
-    print("Invalid DNA sequence")
-else:
-    nuc_A = seq.count("A")
-    nuc_T = seq.count("T")
-    nuc_C = seq.count("C")
-    nuc_G = seq.count("G")
 
-    print("Number of A nucleotides: ", nuc_A)
-    print("Number of T nucleotides: ", nuc_T)
-    print("Number of C nucleotides: ", nuc_C)
-    print("Number of G nucleotides: ", nuc_G)
+def nucleotide_count(dna_seq):
+    count = {"A": 0, "T": 0, "G": 0, "C": 0}
+    for nuc in dna_seq:
+        if nuc in count:
+            count[nuc] += 1
+    return count
 
-    AT_content = ((nuc_A + nuc_T) / len(seq) * 100)
-    GC_content = ((nuc_C + nuc_G) / len(seq) * 100)
+def gc_content(dna_seq):
+    gc_count = dna_seq.count("G") + dna_seq.count("C")
+    return (gc_count / len(dna_seq)) * 100
 
-    print("The GC content of the sequence: ", GC_content, "%")
-    print("The AT content of the sequence: ", AT_content, "%")
+def reverse_complement(dna_seq):
+    complement = ""
+    for base in dna_seq:
+        if base == "A":
+            complement += "T"
+        elif base == "T":
+            complement += "A"
+        elif base == "C":
+            complement += "G"
+        elif base == "G":
+            complement += "C"
+    return complement[::-1]
 
-# Print reverse complementary sequence
-complement = ""
-for base in seq:
-    if base == "A":
-        complement += "T"
-    elif base == "T":
-        complement += "A"
-    elif base == "C":
-        complement += "G"
-    elif base == "G":
-        complement += "C"
-reverse_complement = complement[::-1]
-print("Reverse complementary sequence: 5'", reverse_complement, "3'")
+def transcribe_dna_to_mRNA(dna_seq):
+    return dna_seq.replace("T", "U")
 
-# DNA to mRNA transcription
-rna_seq = seq.replace("T", "U")
-print("mRNA sequence: 5'", rna_seq, "3'")
-
-# mRNA to protein translation
 def translate_mRNA_to_protein(rna_seq):
     codon_table = {
         'UUU':'F','UUC':'F','UUA':'L','UUG':'L',
@@ -74,6 +59,19 @@ def translate_mRNA_to_protein(rna_seq):
         protein_seq += codon_table.get(codon) 
     return protein_seq
 
-# Translate the DNA sequence to a protein sequence
-protein_seq = translate_mRNA_to_protein(rna_seq)
-print("Protein sequence: ", protein_seq)
+if __name__ == "__main__":
+    dna_seq = input("Enter a DNA sequence from 5' to 3': ").upper()
+    if validate_dna_seq(dna_seq):
+        print("Validated DNA sequence")
+        count = nucleotide_count(dna_seq)
+        print("Number of A nucleotides: ", count["A"])
+        print("Number of T nucleotides: ", count["T"])
+        print("Number of G nucleotides: ", count["G"])
+        print("Number of C nucleotides: ", count["C"])
+        print("GC content:", gc_content(dna_seq), "%")
+        print("Reverse complement:", reverse_complement(dna_seq))
+        print("mRNA sequence:", transcribe_dna_to_mRNA(dna_seq))
+        print("Protein sequence:", translate_mRNA_to_protein(transcribe_dna_to_mRNA(dna_seq)))
+    else:
+        print("Invalid DNA sequence")
+        
